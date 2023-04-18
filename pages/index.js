@@ -1,8 +1,31 @@
 import Head from "next/head";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import backgroundImage from "../public/background.webp";
 
 export default function Home() {
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [pressed, setPressed] = useState(false);
+
+  useEffect(() => {
+    function handlemove(e) {
+      setPosition({ x: e.clientX, y: e.clientY });
+      setPressed(true);
+    }
+
+    document.getElementById("background").addEventListener("click", handlemove);
+
+    return () => {
+      document
+        .getElementById("background")
+        .addEventListener("click", handlemove);
+    };
+  }, []);
+
+  function selectHero() {
+    setPressed(false);
+  }
+
   function toggle_hidden() {
     document.getElementById("modal").remove();
     console.log("pressed");
@@ -16,8 +39,8 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="flex justify-center h-screen w-screen items-center">
-        <div className="fixed h-screen w-screen">
+      <div className="flex justify-center h-screen w-screen items-center relative">
+        <div id="background" className="fixed h-screen w-screen">
           <Image src={backgroundImage} alt="backgound image" fill priority />
         </div>
         <div
@@ -38,6 +61,20 @@ export default function Home() {
           >
             Play!
           </button>
+        </div>
+        <div
+          className="z-10 flex flex-col bg-cyan-600 p-4 rounded-md opacity-80 "
+          style={{
+            position: "absolute",
+            transform: `translate(${position.x}px,${position.y}px)`,
+            left: -20,
+            top: -20,
+            display: pressed ? "flex" : "none",
+          }}
+        >
+          <button onClick={selectHero}>Iron Man</button>
+          <button onClick={selectHero}>The Hulk</button>
+          <button onClick={selectHero}>Batman</button>
         </div>
       </div>
     </>
